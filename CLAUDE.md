@@ -32,7 +32,8 @@ Telegram-бот на aiogram 3: каталог косметики с кнопк�
 ## Как выкатывать изменения кода (всё делаем сами)
 1. Правим код, гоняем офлайн-тесты (заглушки сообщений, копия каталога во временной папке).
 2. `D:\бот косметика` — git-репозиторий, связан с origin/main, `gh` авторизован (аккаунт daniilstrekalev0201).
-   Git и gh не в PATH сессии: сначала `$env:Path = "C:\Program Files\Git\cmd;C:\Program Files\GitHub CLI;" + $env:Path`.
+   Git установлен в `D:\Git`, gh — в `D:\GitHub CLI` (по просьбе пользователя). Если их нет в PATH сессии:
+   `$env:Path = "D:\Git\cmd;D:\GitHub CLI;" + $env:Path`.
    Коммитим и пушим: `git add <файлы>; git commit -m "..."; git push`. `.env` в .gitignore — проверять `git status` перед коммитом.
    Автор коммитов — noreply-адрес GitHub (репозиторий публичный, личную почту не светим).
 3. Встроенный браузер → bothost.ru/dashboard.php → «Обновить из Git». Проверяем «Показать логи».
