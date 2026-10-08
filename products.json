@@ -1,0 +1,116 @@
+{
+  "shop": {
+    "name": "O&A cosmetics",
+    "welcome": "Привет! 🤍 Это каталог <b>O&A cosmetics</b>.\n\nЭто больше, чем просто косметика. Это философия любви к себе и гармонии с природой.\n\nВыберите раздел 👇",
+    "about": "<b>O&A cosmetics</b> — натуральная косметика премиум-класса, произведено в России.\n\n⭐️ Рейтинг магазина на Ozon — 4,9\n\nЗаказать можно на Ozon с доставкой или написать нам в Instagram 👇",
+    "links": [
+      {
+        "title": "📸 Наш Instagram",
+        "url": "https://www.instagram.com/oa_cosmetics_/"
+      },
+      {
+        "title": "🔵 Магазин на Ozon",
+        "url": "https://www.ozon.ru/seller/o-a-cosmetics/"
+      }
+    ]
+  },
+  "categories": [
+    {
+      "id": "care",
+      "title": "🤍 Уход за собой"
+    }
+  ],
+  "products": [
+    {
+      "id": "scrub",
+      "category": "care",
+      "name": "Сахарный скраб «Кокос»",
+      "brand": "O&A cosmetics",
+      "price": "705 ₽",
+      "volume": "250 г",
+      "description": "Сахарный скраб для тела с шиммером и ароматом кокоса. Очищает, питает и смягчает кожу — она становится гладкой и упругой, с эффектом нежного шёлка. Подходит для всех типов кожи, на растительной основе.",
+      "composition": "тростниковый сахар, масло кокоса, масло оливы, витамин Е, кокосовая стружка, отдушка «Кокос», гипоаллергенный шиммер.",
+      "how_to_use": "нанесите круговыми движениями на влажную кожу, от стоп вверх к сердцу, и смойте тёплой водой. Дополнительное увлажнение после не нужно. 1–2 раза в неделю.",
+      "where_to_buy": "на Ozon или в нашем Instagram — пишите в директ",
+      "photo": "photos/scrub.jpg",
+      "buy_links": [
+        {
+          "title": "🔵 Купить на Ozon",
+          "url": "https://www.ozon.ru/product/o-a-cosmetics-saharnyy-skrab-dlya-tela-s-shimmerom-kokos-1782281650/"
+        },
+        {
+          "title": "📸 Заказать в Instagram",
+          "url": "https://www.instagram.com/oa_cosmetics_/"
+        }
+      ]
+    },
+    {
+      "id": "milk",
+      "category": "care",
+      "name": "Молочко для тела «Кокос»",
+      "brand": "O&A cosmetics",
+      "price": "768 ₽",
+      "volume": "250 мл",
+      "description": "Лёгкое молочко с ароматом кокоса: моментально впитывается, не оставляет жирных следов и липкости. Смягчает, питает и увлажняет кожу, оказывает успокаивающий эффект. Подходит для чувствительной кожи и ежедневного применения.",
+      "composition": "5 натуральных масел (ши, оливковое, миндальное, кокосовое, виноградное), 4 натуральных экстракта (ромашки, конского каштана, свёклы, календулы), гидролизат коллагена, Lipomoist 2036, серебряная вода, отдушка «Кокос».",
+      "how_to_use": "нанесите массажными движениями на чистую кожу.",
+      "where_to_buy": "на Ozon или в нашем Instagram — пишите в директ",
+      "photo": "photos/milk.jpg",
+      "buy_links": [
+        {
+          "title": "🔵 Купить на Ozon",
+          "url": "https://www.ozon.ru/product/o-a-cosmetics-molochko-dlya-tela-s-aromatom-kokosa-legkaya-tekstura-smyagchenie-i-pitanie-kozhi-1782264160/"
+        },
+        {
+          "title": "📸 Заказать в Instagram",
+          "url": "https://www.instagram.com/oa_cosmetics_/"
+        }
+      ]
+    },
+    {
+      "id": "mist",
+      "category": "care",
+      "name": "Мист «Алоэ вера»",
+      "brand": "O&A cosmetics",
+      "price": "747 ₽",
+      "volume": "200 мл",
+      "description": "Мист для лица и тела: мгновенно увлажняет и освежает кожу, снимает раздражение, помогает уменьшить пигментацию. Не оставляет следов и липкости. Отлично подходит после солнца и солярия, для любого возраста, не комедогенный.",
+      "composition": "гидролат лаванды, очищенная вода, глицерин, витамин Е, спирт (менее 1%), отдушка «Алоэ вера».",
+      "how_to_use": "распылите на чистую кожу лица и тела. Можно наносить в течение дня, подходит для ежедневного применения.",
+      "where_to_buy": "на Ozon или в нашем Instagram — пишите в директ",
+      "photo": "photos/mist.jpg",
+      "buy_links": [
+        {
+          "title": "🔵 Купить на Ozon",
+          "url": "https://www.ozon.ru/product/o-a-cosmetics-mist-dlya-litsa-i-tela-aloe-vera-uvlazhnenie-snimaet-razdrazhenie-kozhi-1782278736/"
+        },
+        {
+          "title": "📸 Заказать в Instagram",
+          "url": "https://www.instagram.com/oa_cosmetics_/"
+        }
+      ]
+    },
+    {
+      "id": "bronzer",
+      "category": "care",
+      "name": "Бронзатор «Caramel» SPF 15",
+      "brand": "O&A cosmetics",
+      "price": "700 ₽",
+      "description": "Защита и красота в одном флаконе: красивый загар и надёжная защита кожи. SPF 15 защищает от вредного воздействия солнечных лучей. Увлажняет, питает, омолаживает и обладает бактерицидными свойствами. Подходит для всех типов кожи, можно использовать на открытом солнце и в солярии. Не является автозагаром.",
+      "how_to_use": "нанесите на чистую кожу и распределите. Можно наносить в несколько слоёв.",
+      "where_to_buy": "в нашем Instagram — пишите в директ",
+      "photo": "photos/bronzer.jpg",
+      "buy_links": [
+        {
+          "title": "📸 Заказать в Instagram",
+          "url": "https://www.instagram.com/oa_cosmetics_/"
+        },
+        {
+          "title": "👀 Пост о бронзаторе",
+          "url": "https://www.instagram.com/p/DIa6xDDoPXK/"
+        }
+      ],
+      "volume": "100 мл"
+    }
+  ]
+}
