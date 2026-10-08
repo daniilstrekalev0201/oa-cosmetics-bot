@@ -16,10 +16,14 @@ BACKUP_FILE = CATALOG_FILE.with_name("products.backup.json")
 DEFAULT_ADMIN_IDS = "974443828"
 
 
-def admin_ids() -> set[int]:
-    """Telegram ID админов из ADMIN_IDS в .env (через запятую), иначе — DEFAULT_ADMIN_IDS."""
+def admin_list() -> list[int]:
+    """Telegram ID админов из ADMIN_IDS в .env (через запятую) в заданном порядке, иначе — DEFAULT_ADMIN_IDS."""
     raw = os.getenv("ADMIN_IDS") or DEFAULT_ADMIN_IDS
-    return {int(x) for x in raw.replace(" ", "").split(",") if x.isdigit()}
+    return [int(x) for x in raw.replace(" ", "").split(",") if x.isdigit()]
+
+
+def admin_ids() -> set[int]:
+    return set(admin_list())
 
 
 def load_catalog() -> dict:

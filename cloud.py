@@ -1,7 +1,7 @@
 """Копия каталога в Telegram.
 
 На бесплатном хостинге диск стирается при каждом перезапуске, и правки из
-админки пропали бы. Поэтому каталог хранится ещё и в чате первого админа:
+админки пропали бы. Поэтому каталог хранится ещё и в чате первого админа из ADMIN_IDS:
 закреплённое сообщение с файлом products.json. После каждой правки бот
 обновляет этот файл (редактирует то же сообщение), а при запуске — забирает
 его оттуда.
@@ -16,14 +16,15 @@ from aiogram import Bot
 from aiogram.exceptions import TelegramAPIError
 from aiogram.types import BufferedInputFile, InputMediaDocument, Message
 
-from catalog import CATALOG_FILE, admin_ids
+from catalog import CATALOG_FILE, admin_list
 
 FILE_NAME = "products.json"
 _lock = asyncio.Lock()
 
 
 def _owner() -> int | None:
-    ids = sorted(admin_ids())
+    """Копия каталога хранится в чате первого админа из ADMIN_IDS — его нельзя менять местами с другими."""
+    ids = admin_list()
     return ids[0] if ids else None
 
 
