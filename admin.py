@@ -41,6 +41,7 @@ FIELDS = {
     "name": "Название",
     "price": "Цена",
     "volume": "Объём",
+    "sku": "Артикул Ozon",
     "brand": "Бренд",
     "description": "Описание",
     "composition": "Состав",

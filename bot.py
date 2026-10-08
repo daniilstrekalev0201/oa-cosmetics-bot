@@ -30,7 +30,7 @@ from dotenv import load_dotenv
 
 import admin
 import cloud
-from catalog import find_product, load_catalog, photo_input, product_categories, product_text
+from catalog import find_product, load_catalog, photo_input, product_categories, product_text, save_catalog
 
 PER_PAGE = 6  # сколько товаров показывать на одной странице категории
 CAPTION_LIMIT = 1024  # ограничение Telegram на подпись к фото
@@ -234,6 +234,28 @@ async def setup_commands(bot: Bot) -> None:
             logging.warning("Не удалось задать команды для админа %s: %s", uid, err)
 
 
+# ---------- разовые обновления каталога ----------
+
+# Каталог живёт в Telegram (см. cloud.py), поэтому новые данные вносим при запуске.
+# Каждое обновление выполняется один раз — его имя запоминается в catalog["done"],
+# и последующие правки из админки не перезаписываются.
+OZON_SKUS = {"scrub": "1782281650", "milk": "1782264160", "mist": "1782278736", "bronzer": "1782274675"}
+
+
+async def apply_updates(bot: Bot) -> None:
+    catalog = load_catalog()
+    done = catalog.setdefault("done", [])
+    if "ozon_skus" in done:
+        return
+    for p in catalog["products"]:
+        if p["id"] in OZON_SKUS and not p.get("sku"):
+            p["sku"] = OZON_SKUS[p["id"]]
+    done.append("ozon_skus")
+    save_catalog(catalog)
+    await cloud.push(bot)
+    logging.info("Артикулы Ozon добавлены в каталог")
+
+
 async def main() -> None:
     load_dotenv()
     token = os.getenv("BOT_TOKEN")
@@ -244,6 +266,7 @@ async def main() -> None:
     bot = Bot(token, default=DefaultBotProperties(parse_mode=ParseMode.HTML))
     await setup_commands(bot)
     await cloud.pull(bot)  # на бесплатном хостинге диск чистый — берём каталог из Telegram
+    await apply_updates(bot)
     await dp.start_polling(bot)
 
 

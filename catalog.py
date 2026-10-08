@@ -73,6 +73,9 @@ def product_text(product: dict) -> str:
     lines.append(f"💰 <b>Цена:</b> {e(product['price'])}")
     if product.get("volume"):
         lines.append(f"📦 <b>Объём:</b> {e(product['volume'])}")
+    if product.get("sku"):
+        # <code> — в Telegram номер копируется одним нажатием
+        lines.append(f"🔢 <b>Артикул Ozon:</b> <code>{e(product['sku'])}</code>")
     if product.get("description"):
         lines += ["", e(product["description"])]
     if product.get("composition"):
