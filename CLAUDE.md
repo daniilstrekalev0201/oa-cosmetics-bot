@@ -35,6 +35,11 @@ Telegram-бот на aiogram 3: каталог косметики с кнопк�
   Смена имени домена в Bothost: после «Сохранить» прокси может отдавать 404 — помогает повторный вызов
   `fetch('api/bot-settings.php',{method:'POST',body:JSON.stringify({action:'update_domain',id:BOT_ID,enabled:true,domain:...,internal_port:3000})})`
   на странице bot-manage.php (ответ route_ok:true). Переменная DOMAIN в контейнере при этом остаётся старой.
+- `ozon.py` — автообновление цен с Ozon (Seller API `/v3/product/info/list` по sku, раз в OZON_SYNC_HOURS=3 ч).
+  Включается переменными OZON_CLIENT_ID и OZON_API_KEY в Bothost (вписывает пользователь, ключ нам не присылают).
+  Публичный сайт Ozon скрапить нельзя — Antibot/403. При изменении цен пишет владельцу в Telegram.
+  Поле price в ответе — цена продавца; витринная цена с Ozon-картой может быть ниже (API её не отдаёт).
+  ПРОВЕРИТЬ после появления ключа: логи «Цены обновлены…»/ошибка, формат ответа API.
 - `stats.py` — статистика (/admin → 📊): ID и даты покупателей без админов, в `DATA_DIR`/stats.json
   (на Bothost /app/data — постоянный диск). Нажатия URL-кнопок Telegram не сообщает — считать через будущий сайт.
 - `для GitHub/` — чистая копия для загрузки на GitHub через сайт (без `.env`). Обновлять её при изменении кода.

@@ -25,6 +25,7 @@ from aiogram.types import (
 )
 
 import cloud
+import ozon
 import stats
 from catalog import (
     admin_ids,
@@ -289,6 +290,9 @@ async def on_action(call: CallbackQuery, callback_data: A, state: FSMContext) ->
             return await show(call, *prods_screen(catalog, "⚠️ Товар не найден.\n\n"))
         current = e(str(p.get(arg) or "—"))
         clear_hint = "" if arg in REQUIRED else "\n\nЧтобы очистить поле, отправьте <code>-</code>"
+        if arg == "price" and p.get("sku") and ozon._credentials():
+            clear_hint += ("\n\n⚠️ Цена этого товара обновляется автоматически с Ozon по артикулу — "
+                           "ручная правка будет заменена ценой с Ozon. Чтобы отключить, очистите артикул.")
         prompt = f"✏️ <b>{FIELDS[arg]}</b> — «{e(p['name'])}»\n\nСейчас:\n{current}\n\nНапишите новое значение:{clear_hint}"
         return await ask(call, state, prompt, A(act="prod", id=oid), kind="pfield", id=oid, field=arg)
     if act == "pphoto":
