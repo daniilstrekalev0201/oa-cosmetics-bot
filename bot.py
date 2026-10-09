@@ -30,6 +30,7 @@ from dotenv import load_dotenv
 
 import admin
 import cloud
+import stats
 from catalog import find_product, load_catalog, photo_input, product_categories, product_text, save_catalog
 
 PER_PAGE = 6  # сколько товаров показывать на одной странице категории
@@ -144,6 +145,7 @@ async def _safe_delete(msg: Message) -> None:
 @dp.message(Command("menu"))
 async def cmd_start(message: Message, state: FSMContext) -> None:
     await state.clear()  # выходим из режима ввода админки, если он был включён
+    stats.track(message.from_user.id, "start")
     catalog = load_catalog()
     await message.answer(catalog["shop"]["welcome"], reply_markup=home_kb(catalog))
 
@@ -157,6 +159,7 @@ async def on_home(call: CallbackQuery) -> None:
 
 @dp.callback_query(MenuCb.filter(F.action == "about"))
 async def on_about(call: CallbackQuery) -> None:
+    stats.track(call.from_user.id, "about")
     catalog = load_catalog()
     shop = catalog["shop"]
     kb = InlineKeyboardBuilder()
@@ -175,6 +178,8 @@ async def on_category(call: CallbackQuery, callback_data: CatCb) -> None:
     if cat is None:
         await call.answer("Категория не найдена", show_alert=True)
         return
+    if callback_data.page == 0:  # листание страниц не считаем отдельным заходом
+        stats.track(call.from_user.id, "category", cat["id"])
     text = f"<b>{html.escape(cat['title'])}</b>\n\nВыберите товар 👇"
     await show(call, text, category_kb(catalog, cat["id"], callback_data.page))
     await call.answer()
@@ -187,6 +192,7 @@ async def on_product(call: CallbackQuery, callback_data: ProdCb) -> None:
     if product is None:
         await call.answer("Этот товар больше недоступен", show_alert=True)
         return
+    stats.track(call.from_user.id, "product", product["id"])
     kb = product_kb(product, callback_data.cat, callback_data.page)
     await show(call, product_text(product), kb, photo_input(product.get("photo")))
     await call.answer()

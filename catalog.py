@@ -4,12 +4,14 @@ import html
 import json
 import os
 import shutil
+from datetime import timedelta, timezone
 from pathlib import Path
 
 from aiogram.types import FSInputFile
 
 CATALOG_FILE = Path(__file__).with_name("products.json")
 BACKUP_FILE = CATALOG_FILE.with_name("products.backup.json")
+LOCAL_TZ = timezone(timedelta(hours=5), "UTC+5")  # Челябинск: время в статистике и подписях
 
 
 # Админ по умолчанию — на хостинге без переменных окружения бот всё равно знает владельца.

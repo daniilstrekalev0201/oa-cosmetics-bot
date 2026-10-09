@@ -3,3 +3,4 @@ products.backup.json
 *.tmp
 __pycache__/
 для GitHub/
+data/

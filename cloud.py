@@ -16,7 +16,7 @@ from aiogram import Bot
 from aiogram.exceptions import TelegramAPIError
 from aiogram.types import BufferedInputFile, InputMediaDocument, Message
 
-from catalog import CATALOG_FILE, admin_list
+from catalog import CATALOG_FILE, LOCAL_TZ, admin_list
 
 FILE_NAME = "products.json"
 _lock = asyncio.Lock()
@@ -61,7 +61,7 @@ async def push(bot: Bot) -> None:
     if owner is None:
         return
     async with _lock:
-        stamp = datetime.now().strftime("%d.%m.%Y %H:%M:%S")
+        stamp = datetime.now(LOCAL_TZ).strftime("%d.%m.%Y %H:%M:%S")
         caption = f"🗂 Копия каталога от {stamp}\nНе удаляйте и не открепляйте это сообщение — бот хранит здесь каталог."
         doc = BufferedInputFile(CATALOG_FILE.read_bytes(), filename=FILE_NAME)
         try:

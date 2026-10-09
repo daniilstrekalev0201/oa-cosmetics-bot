@@ -25,6 +25,7 @@ from aiogram.types import (
 )
 
 import cloud
+import stats
 from catalog import (
     admin_ids,
     find_category,
@@ -141,6 +142,7 @@ def home_screen(note: str = ""):
         [("📦 Товары", A(act="prods")), ("🗂 Разделы", A(act="cats"))],
         [("💬 Приветствие", A(act="text", id="welcome")), ("ℹ️ О магазине", A(act="text", id="about"))],
         [("🔗 Кнопки в «О магазине»", A(act="links", id=SHOP))],
+        [("📊 Статистика", A(act="stats"))],
         [("✖️ Закрыть", A(act="close"))],
     )
 
@@ -264,6 +266,9 @@ async def on_action(call: CallbackQuery, callback_data: A, state: FSMContext) ->
         return await call.answer("Админ-панель закрыта. Открыть снова: /admin")
     if act == "prods":
         return await show(call, *prods_screen(catalog))
+    if act == "stats":
+        kb = kb_rows([("🔄 Обновить", A(act="stats"))], [("⬅️ Назад", A(act="home"))])
+        return await show(call, stats.report(catalog), kb)
     if act == "prod":
         return await show(call, *prod_screen(catalog, oid))
     if act == "pcats":
