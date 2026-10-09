@@ -8,6 +8,7 @@ import copy
 import html
 import re
 import uuid
+from datetime import datetime
 
 from aiogram import Router
 from aiogram.exceptions import TelegramBadRequest
@@ -24,6 +25,7 @@ from aiogram.types import (
     TelegramObject,
 )
 
+import billing
 import cloud
 import ozon
 import stats
@@ -138,14 +140,31 @@ def links_of(catalog: dict, owner: str) -> list[dict] | None:
 # ---------- экраны ----------
 
 def home_screen(note: str = ""):
-    text = f"{note}⚙️ <b>Админ-панель</b>\n\nЧто хотите изменить? Изменения сразу видны покупателям."
+    text = (f"{note}⚙️ <b>Админ-панель</b>\n\n{billing.status_line(load_catalog())}\n\n"
+            "Что хотите изменить? Изменения сразу видны покупателям.")
     return text, kb_rows(
         [("📦 Товары", A(act="prods")), ("🗂 Разделы", A(act="cats"))],
         [("💬 Приветствие", A(act="text", id="welcome")), ("ℹ️ О магазине", A(act="text", id="about"))],
         [("🔗 Кнопки в «О магазине»", A(act="links", id=SHOP))],
-        [("📊 Статистика", A(act="stats"))],
+        [("📊 Статистика", A(act="stats")), ("💳 Оплата сервера", A(act="billing"))],
         [("✖️ Закрыть", A(act="close"))],
     )
+
+
+def billing_screen(catalog: dict, note: str = ""):
+    text = (
+        f"{note}💳 <b>Оплата сервера Bothost</b>\n\n{billing.status_line(catalog)}\n\n"
+        f"Тариф «Базовый», {billing.PRICE} в месяц. Продлевать: bothost.ru → «Тарифы».\n"
+        "Напоминание придёт админам за 3 дня, за 1 день и в день окончания.\n\n"
+        "После оплаты нажмите «✅ Оплатил» — дата сдвинется на 30 дней."
+    )
+    kb = InlineKeyboardMarkup(inline_keyboard=[
+        [InlineKeyboardButton(text="💳 Открыть Bothost", url=billing.PAY_URL)],
+        [InlineKeyboardButton(text="✅ Оплатил (+30 дней)", callback_data=A(act="paid").pack())],
+        [InlineKeyboardButton(text="📅 Указать дату вручную", callback_data=A(act="paydate").pack())],
+        [InlineKeyboardButton(text="⬅️ Назад", callback_data=A(act="home").pack())],
+    ])
+    return text, kb
 
 
 def prods_screen(catalog: dict, note: str = ""):
@@ -267,6 +286,20 @@ async def on_action(call: CallbackQuery, callback_data: A, state: FSMContext) ->
         return await call.answer("Админ-панель закрыта. Открыть снова: /admin")
     if act == "prods":
         return await show(call, *prods_screen(catalog))
+    if act == "billing":
+        return await show(call, *billing_screen(catalog))
+    if act == "paid":
+        new = billing.extend(catalog)
+        await save(call, catalog)
+        text, kb = billing_screen(catalog, "✅ Оплата отмечена.\n\n")
+        if "видят только админы" in (call.message.text or ""):  # нажали в напоминании
+            await call.answer(f"Отмечено! Оплачено до {new:%d.%m.%Y}")
+            await call.message.edit_reply_markup(reply_markup=None)  # оно больше не актуально
+            return await call.message.answer(text, reply_markup=kb)
+        return await show(call, text, kb)  # show сам отвечает на нажатие
+    if act == "paydate":
+        return await ask(call, state, "📅 Напишите, до какого числа оплачен сервер, в формате <code>07.11.2026</code>",
+                         A(act="billing"), kind="paydate")
     if act == "stats":
         kb = kb_rows([("🔄 Обновить", A(act="stats"))], [("⬅️ Назад", A(act="home"))])
         return await show(call, stats.report(catalog), kb)
@@ -484,6 +517,16 @@ async def on_input(message: Message, state: FSMContext) -> None:
             await save(message, catalog)
         await state.clear()
         return await show(message, *cat_screen(catalog, oid))
+
+    if kind == "paydate":
+        try:
+            value = datetime.strptime(text, "%d.%m.%Y").date()
+        except ValueError:
+            return await message.answer("Не понял дату. Напишите так: <code>07.11.2026</code>")
+        billing.set_paid_until(catalog, value)
+        await save(message, catalog)
+        await state.clear()
+        return await show(message, *billing_screen(catalog, "✅ Дата сохранена.\n\n"))
 
     if kind == "text" and oid in TEXTS:
         catalog["shop"][oid] = message.html_text

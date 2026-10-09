@@ -29,6 +29,7 @@ from aiogram.utils.keyboard import InlineKeyboardBuilder
 from dotenv import load_dotenv
 
 import admin
+import billing
 import cloud
 import stats
 import ozon
@@ -308,7 +309,10 @@ async def main() -> None:
     await cloud.pull(bot)  # на бесплатном хостинге диск чистый — берём каталог из Telegram
     await apply_updates(bot)
     await website.start(bot)  # сайт-витрина на том же каталоге (порт PORT)
-    prices_task = asyncio.create_task(ozon.run_forever(bot))  # цены с Ozon, если задан ключ  # noqa: F841
+    background = [  # ссылки держим, чтобы задачи не собрал сборщик мусора
+        asyncio.create_task(ozon.run_forever(bot)),  # цены с Ozon, если задан ключ
+        asyncio.create_task(billing.run_forever(bot)),  # напоминание админам об оплате Bothost
+    ]  # noqa: F841
     await dp.start_polling(bot)
 
 
