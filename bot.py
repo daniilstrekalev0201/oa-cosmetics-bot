@@ -167,6 +167,7 @@ async def on_about(call: CallbackQuery) -> None:
     kb = InlineKeyboardBuilder()
     for link in shop.get("links", []):
         kb.button(text=link["title"], url=link["url"])
+    kb.button(text="🌐 Наш сайт", url=website.SITE_URL)  # кодом, а не в каталоге — иначе сайт ссылался бы сам на себя
     kb.button(text="🏠 Главное меню", callback_data=MenuCb(action="home"))
     kb.adjust(1)
     await show(call, shop.get("about", ""), kb.as_markup())
