@@ -66,6 +66,19 @@ def track(user_id: int, event: str, key: str = "") -> None:
     counters = day["events"].setdefault(event, {})
     counters[key] = counters.get(key, 0) + 1
 
+    _prune_and_save(stats)
+
+
+def track_site(event: str, key: str = "") -> None:
+    """Учитывает событие на сайте: visit (открыли страницу), click (нажали кнопку-ссылку)."""
+    stats = _load()
+    day = stats["days"].setdefault(_today().isoformat(), {"active": [], "events": {}})
+    counters = day.setdefault("site", {}).setdefault(event, {})
+    counters[key] = counters.get(key, 0) + 1
+    _prune_and_save(stats)
+
+
+def _prune_and_save(stats: dict) -> None:
     oldest = (_today() - timedelta(days=KEEP_DAYS)).isoformat()
     for d in [d for d in stats["days"] if d < oldest]:
         del stats["days"][d]
@@ -84,6 +97,16 @@ def _count(stats: dict, event: str, days: int) -> dict[str, int]:
     for d, day in stats["days"].items():
         if d >= start:
             for key, n in day["events"].get(event, {}).items():
+                total[key] = total.get(key, 0) + n
+    return total
+
+
+def _count_site(stats: dict, event: str, days: int) -> dict[str, int]:
+    total: dict[str, int] = {}
+    start = _since(days)
+    for d, day in stats["days"].items():
+        if d >= start:
+            for key, n in day.get("site", {}).get(event, {}).items():
                 total[key] = total.get(key, 0) + n
     return total
 
@@ -135,5 +158,12 @@ def report(catalog: dict) -> str:
         n_views = sum(day["events"].get("product", {}).values())
         lines.append(f"{d:%d.%m} — 👥 {len(day['active'])} · 👀 {n_views}")
 
-    lines += ["", "<i>Нажатия на ссылки (Ozon, Instagram) Telegram боту не сообщает — их посчитаем, когда появится сайт.</i>"]
+    visits = sum(_count_site(stats, "visit", 30).values())
+    clicks = sorted(_count_site(stats, "click", 30).items(), key=lambda kv: -kv[1])
+    lines += ["", f"🌐 <b>Сайт за 30 дней:</b> открывали {visits} раз"]
+    if clicks:
+        lines.append("Нажатия на кнопки на сайте:")
+        lines += [f"• {e(key)} — {n}" for key, n in clicks[:15]]
+
+    lines += ["", "<i>Нажатия на кнопки-ссылки внутри Telegram боту не видны — считаются только на сайте.</i>"]
     return "\n".join(lines)

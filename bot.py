@@ -31,6 +31,7 @@ from dotenv import load_dotenv
 import admin
 import cloud
 import stats
+import website
 from catalog import find_product, load_catalog, photo_input, product_categories, product_text, save_catalog
 
 PER_PAGE = 6  # сколько товаров показывать на одной странице категории
@@ -273,6 +274,7 @@ async def main() -> None:
     await setup_commands(bot)
     await cloud.pull(bot)  # на бесплатном хостинге диск чистый — берём каталог из Telegram
     await apply_updates(bot)
+    await website.start(bot)  # сайт-витрина на том же каталоге (порт PORT)
     await dp.start_polling(bot)
 
 
