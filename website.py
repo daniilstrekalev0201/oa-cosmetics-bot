@@ -19,8 +19,8 @@ import stats
 from catalog import CATALOG_FILE, find_product, load_catalog, product_categories
 
 ROOT = Path(__file__).parent
-# Адрес сайта: Bothost передаёт домен в переменной DOMAIN.
-SITE_URL = "https://" + re.sub(r"^https?://", "", os.getenv("DOMAIN") or "bot-1791469457-9104-daniilstrekalev.bothost.tech").rstrip("/")
+# Адрес сайта (Bothost → Домен). Переменной DOMAIN не верим: при смене имени Bothost её не обновляет.
+SITE_URL = "https://" + re.sub(r"^https?://", "", os.getenv("SITE_URL") or "oacosmetics.bothost.tech").rstrip("/")
 LOGO_FILE = ROOT / "avatar.jpg"
 DEFAULT_TAGLINE = "Это больше, чем просто косметика. Это философия любви к себе и гармонии с природой."
 CACHE = {"Cache-Control": "public, max-age=3600"}

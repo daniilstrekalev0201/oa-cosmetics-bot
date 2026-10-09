@@ -31,7 +31,10 @@ Telegram-бот на aiogram 3: каталог косметики с кнопк�
 - `cloud.py` — хранение каталога в Telegram.
 - `website.py` — сайт-витрина (aiohttp в том же процессе, порт PORT=3000): `/`, `/photo/{id}`, `/go/{товар|shop}/{i}`
   (редирект + подсчёт кликов), `/logo.jpg`, `/health`. Не называть модуль `site.py` — конфликт со stdlib.
-  Адрес: https://bot-1791469457-9104-daniilstrekalev.bothost.tech (домен включён в Bothost 09.10.2026).
+  Адрес: https://oacosmetics.bothost.tech (09.10.2026; старый bot-1791469457-...bothost.tech отключён).
+  Смена имени домена в Bothost: после «Сохранить» прокси может отдавать 404 — помогает повторный вызов
+  `fetch('api/bot-settings.php',{method:'POST',body:JSON.stringify({action:'update_domain',id:BOT_ID,enabled:true,domain:...,internal_port:3000})})`
+  на странице bot-manage.php (ответ route_ok:true). Переменная DOMAIN в контейнере при этом остаётся старой.
 - `stats.py` — статистика (/admin → 📊): ID и даты покупателей без админов, в `DATA_DIR`/stats.json
   (на Bothost /app/data — постоянный диск). Нажатия URL-кнопок Telegram не сообщает — считать через будущий сайт.
 - `для GitHub/` — чистая копия для загрузки на GitHub через сайт (без `.env`). Обновлять её при изменении кода.
