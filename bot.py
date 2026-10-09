@@ -248,19 +248,49 @@ async def setup_commands(bot: Bot) -> None:
 # и последующие правки из админки не перезаписываются.
 OZON_SKUS = {"scrub": "1782281650", "milk": "1782264160", "mist": "1782278736", "bronzer": "1782274675"}
 
+# Посты о товарах в Instagram @oa_cosmetics_ (бронзатор уже со ссылкой на свой пост).
+INSTAGRAM_POSTS = {
+    "scrub": "https://www.instagram.com/p/DeRCElAIbox/",
+    "milk": "https://www.instagram.com/p/DeGqk3tI-dy/",
+    "mist": "https://www.instagram.com/p/DeGqk3tI-dy/",
+}
+
+
+def _add_ozon_skus(catalog: dict) -> None:
+    for p in catalog["products"]:
+        if p["id"] in OZON_SKUS and not p.get("sku"):
+            p["sku"] = OZON_SKUS[p["id"]]
+
+
+def _add_instagram_posts(catalog: dict) -> None:
+    for p in catalog["products"]:
+        url = INSTAGRAM_POSTS.get(p["id"])
+        links = p.setdefault("buy_links", [])
+        if url and all(link["url"] != url for link in links):
+            links.append({"title": "👀 Пост в Instagram", "url": url})
+
+
+UPDATES = [
+    ("ozon_skus", _add_ozon_skus, "Артикулы Ozon добавлены в каталог"),
+    ("insta_posts", _add_instagram_posts, "Ссылки на посты в Instagram добавлены в каталог"),
+]
+
 
 async def apply_updates(bot: Bot) -> None:
     catalog = load_catalog()
     done = catalog.setdefault("done", [])
-    if "ozon_skus" in done:
+    applied = []
+    for name, update, message in UPDATES:
+        if name not in done:
+            update(catalog)
+            done.append(name)
+            applied.append(message)
+    if not applied:
         return
-    for p in catalog["products"]:
-        if p["id"] in OZON_SKUS and not p.get("sku"):
-            p["sku"] = OZON_SKUS[p["id"]]
-    done.append("ozon_skus")
     save_catalog(catalog)
     await cloud.push(bot)
-    logging.info("Артикулы Ozon добавлены в каталог")
+    for message in applied:
+        logging.info(message)
 
 
 async def main() -> None:
