@@ -76,8 +76,8 @@ def _product_card(p: dict) -> str:
     return (
         f'<article class="card" id="p-{e(p["id"])}">{img}<div class="body">'
         f'<h3>{e(p["name"])}</h3><p class="meta">{meta}</p>'
-        f'<p class="price">{e(p["price"])}</p>{more}'
-        f'<div class="buttons">{buttons}</div></div></article>'
+        f'<p class="price">{e(p["price"])}</p>'
+        f'<div class="buttons">{buttons}</div>{more}</div></article>'
     )
 
 
@@ -176,18 +176,18 @@ main{max-width:1100px;margin:0 auto;padding:0 16px}
 .chips a{white-space:nowrap;text-decoration:none;font-size:14px;padding:6px 14px;border-radius:999px;background:var(--paper);border:1px solid var(--line)}
 .cat{padding:24px 0}
 .cat h2,.about h2{font-size:34px;margin-bottom:20px}
-.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:20px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:20px;align-items:start}
 .card{background:var(--paper);border:1px solid var(--line);border-radius:20px;overflow:hidden;display:flex;flex-direction:column}
 .card img,.noimg{width:100%;aspect-ratio:4/5;object-fit:cover;display:block;background:#efe4d6}
 .noimg{display:flex;align-items:center;justify-content:center;font-family:'Cormorant Garamond',serif;font-size:48px;color:var(--accent)}
 .body{padding:16px 18px 20px;display:flex;flex-direction:column;flex:1}
-.card h3{font-size:24px}
+.card h3{font-size:24px;min-height:2.3em}
 .meta{color:var(--muted);font-size:14px;margin:4px 0 0}
 .price{font-size:20px;font-weight:600;margin:10px 0 0}
-details{margin-top:10px;font-size:14px}
+details{margin-top:14px;font-size:14px;border-top:1px solid var(--line);padding-top:10px}
 summary{cursor:pointer;color:var(--accent);font-weight:500}
 details p{margin:8px 0 0}
-.card .buttons{margin-top:auto;padding-top:14px}
+.card .buttons{padding-top:10px}
 .about{text-align:center;max-width:640px;margin:0 auto;padding:48px 0 32px}
 .empty{text-align:center;color:var(--muted)}
 footer{text-align:center;color:var(--muted);font-size:13px;padding:32px 16px;border-top:1px solid var(--line);margin-top:24px}
