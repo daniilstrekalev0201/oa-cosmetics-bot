@@ -197,7 +197,8 @@ footer{text-align:center;color:var(--muted);font-size:13px;padding:32px 16px;bor
 async def index(request: web.Request) -> web.Response:
     if not _is_robot(request):
         stats.track_site("visit")
-    scheme = request.headers.get("X-Forwarded-Proto", request.scheme)  # за прокси Bothost — https
+    local = request.host.startswith(("127.", "localhost"))
+    scheme = "http" if local else "https"  # Bothost отдаёт сайт только по https, но прокси об этом не сообщает
     base_url = f"{scheme}://{request.host}"
     return web.Response(text=render_index(load_catalog(), base_url), content_type="text/html")
 
