@@ -19,6 +19,8 @@ import stats
 from catalog import CATALOG_FILE, find_product, load_catalog, product_categories
 
 ROOT = Path(__file__).parent
+# Адрес сайта: Bothost передаёт домен в переменной DOMAIN.
+SITE_URL = "https://" + re.sub(r"^https?://", "", os.getenv("DOMAIN") or "bot-1791469457-9104-daniilstrekalev.bothost.tech").rstrip("/")
 LOGO_FILE = ROOT / "avatar.jpg"
 DEFAULT_TAGLINE = "Это больше, чем просто косметика. Это философия любви к себе и гармонии с природой."
 CACHE = {"Cache-Control": "public, max-age=3600"}
@@ -272,6 +274,6 @@ async def start(bot: Bot) -> None:
         await runner.setup()
         port = int(os.getenv("PORT", "3000"))  # Bothost: «Порт веб-приложения» = 3000
         await web.TCPSite(runner, "0.0.0.0", port).start()
-        logging.info("Сайт запущен на порту %s", port)
+        logging.info("Сайт запущен на порту %s: %s", port, SITE_URL)
     except Exception:  # noqa: BLE001 — бот важнее сайта
         logging.exception("Не удалось запустить сайт")

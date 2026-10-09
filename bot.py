@@ -96,6 +96,7 @@ def product_kb(product: dict, cat_id: str, page: int) -> InlineKeyboardMarkup:
     kb = InlineKeyboardBuilder()
     for link in product.get("buy_links", []):
         kb.row(InlineKeyboardButton(text=link["title"], url=link["url"]))
+    kb.row(InlineKeyboardButton(text="🌐 Смотреть на сайте", url=f"{website.SITE_URL}/#p-{product['id']}"))
     kb.row(
         InlineKeyboardButton(text="⬅️ Назад", callback_data=CatCb(id=cat_id, page=page).pack()),
         InlineKeyboardButton(text="🏠 Меню", callback_data=MenuCb(action="home").pack()),
