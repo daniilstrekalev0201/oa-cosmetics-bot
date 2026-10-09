@@ -79,7 +79,7 @@ def _product_card(p: dict) -> str:
     )
 
 
-def render_index(catalog: dict) -> str:
+def render_index(catalog: dict, base_url: str = "") -> str:
     shop = catalog["shop"]
     name = e(shop.get("name", "O&A cosmetics"))
     tagline = e(shop.get("site_tagline", DEFAULT_TAGLINE))
@@ -100,7 +100,7 @@ def render_index(catalog: dict) -> str:
         for i, link in enumerate(shop.get("links", []))
     )
     first_photo = next((_photo_url(p) for p in catalog["products"] if p.get("photo")), None)
-    og_image = first_photo or "/logo.jpg"
+    og_image = base_url + (first_photo or "/logo.jpg")  # превью ссылки в Telegram/ВК требует полный адрес
 
     return f"""<!doctype html>
 <html lang="ru">
@@ -112,6 +112,8 @@ def render_index(catalog: dict) -> str:
 <meta property="og:title" content="{name}">
 <meta property="og:description" content="{tagline}">
 <meta property="og:image" content="{og_image}">
+<meta property="og:url" content="{base_url}/">
+<meta property="og:type" content="website">
 <link rel="icon" href="/logo.jpg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600&family=Manrope:wght@400;500;600&display=swap" rel="stylesheet">
@@ -195,7 +197,9 @@ footer{text-align:center;color:var(--muted);font-size:13px;padding:32px 16px;bor
 async def index(request: web.Request) -> web.Response:
     if not _is_robot(request):
         stats.track_site("visit")
-    return web.Response(text=render_index(load_catalog()), content_type="text/html")
+    scheme = request.headers.get("X-Forwarded-Proto", request.scheme)  # за прокси Bothost — https
+    base_url = f"{scheme}://{request.host}"
+    return web.Response(text=render_index(load_catalog(), base_url), content_type="text/html")
 
 
 async def photo(request: web.Request) -> web.StreamResponse:
