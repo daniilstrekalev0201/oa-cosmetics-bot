@@ -6,6 +6,7 @@
 
 import asyncio
 import html
+import json
 import logging
 import os
 
@@ -38,6 +39,7 @@ from catalog import find_product, load_catalog, photo_input, product_categories,
 
 PER_PAGE = 6  # сколько товаров показывать на одной странице категории
 CAPTION_LIMIT = 1024  # ограничение Telegram на подпись к фото
+SCREENS_FILE = stats.DATA_DIR / "screens.json"  # последнее меню в каждом чате
 
 dp = Dispatcher()
 dp.include_router(admin.router)
@@ -120,20 +122,21 @@ async def show(
 
     if photo and len(text) <= CAPTION_LIMIT:
         try:
-            await msg.answer_photo(photo, caption=text, reply_markup=kb)
+            await _remember(await msg.answer_photo(photo, caption=text, reply_markup=kb))
             await _safe_delete(msg)
             return
         except TelegramBadRequest as err:
             logging.warning("Не удалось отправить фото %s: %s", photo, err)
 
     if msg.photo or photo:
-        await msg.answer(text, reply_markup=kb)
+        await _remember(await msg.answer(text, reply_markup=kb))
         await _safe_delete(msg)
     else:
         try:
             await msg.edit_text(text, reply_markup=kb)
         except TelegramBadRequest:
             pass  # «message is not modified» — экран и так тот же
+        await _remember(msg)  # нажали кнопку в старом меню — лишнее удалится
 
 
 async def _safe_delete(msg: Message) -> None:
@@ -141,6 +144,41 @@ async def _safe_delete(msg: Message) -> None:
         await msg.delete()
     except TelegramBadRequest:
         pass
+
+
+# ---------- чистый чат: в чате остаётся одно меню ----------
+
+_screens: dict[str, int] | None = None
+
+
+def _load_screens() -> dict[str, int]:
+    global _screens
+    if _screens is None:
+        try:
+            _screens = json.loads(SCREENS_FILE.read_text(encoding="utf-8"))
+        except (OSError, ValueError):
+            _screens = {}
+    return _screens
+
+
+async def _remember(msg: Message) -> None:
+    """Запоминает меню чата и удаляет прошлое (Telegram даёт удалять только 48 часов)."""
+    screens = _load_screens()
+    chat = str(msg.chat.id)
+    old = screens.get(chat)
+    if old == msg.message_id:
+        return
+    if old:
+        try:
+            await msg.bot.delete_message(msg.chat.id, old)
+        except TelegramBadRequest:
+            pass  # уже удалено или старше 48 часов
+    screens[chat] = msg.message_id
+    try:
+        SCREENS_FILE.parent.mkdir(parents=True, exist_ok=True)
+        SCREENS_FILE.write_text(json.dumps(screens), encoding="utf-8")
+    except OSError as err:
+        logging.warning("Не удалось сохранить меню чатов: %s", err)
 
 
 # ---------- обработчики ----------
@@ -151,7 +189,8 @@ async def cmd_start(message: Message, state: FSMContext) -> None:
     await state.clear()  # выходим из режима ввода админки, если он был включён
     stats.track(message.from_user.id, "start")
     catalog = load_catalog()
-    await message.answer(catalog["shop"]["welcome"], reply_markup=home_kb(catalog))
+    await _safe_delete(message)  # саму команду /start тоже убираем
+    await _remember(await message.answer(catalog["shop"]["welcome"], reply_markup=home_kb(catalog)))
 
 
 @dp.callback_query(MenuCb.filter(F.action == "home"))
